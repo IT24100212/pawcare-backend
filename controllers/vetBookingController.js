@@ -154,4 +154,35 @@ const cancelBooking = async (req, res) => {
   }
 };
 
-module.exports = { getAvailableSlots, lockSlot, confirmBooking, cancelBooking };
+const getAllVetBookings = async (req, res) => {
+  try {
+    const bookings = await Booking.find({ serviceType: 'Vet' })
+      .populate('petId')
+      .populate('userId');
+    res.status(200).json(bookings);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+const updateBookingStatus = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { status } = req.body;
+
+    const booking = await Booking.findById(id);
+
+    if (!booking) {
+      return res.status(404).json({ message: 'Booking not found' });
+    }
+
+    booking.status = status;
+    await booking.save();
+
+    res.status(200).json(booking);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+module.exports = { getAvailableSlots, lockSlot, confirmBooking, cancelBooking, getAllVetBookings, updateBookingStatus };

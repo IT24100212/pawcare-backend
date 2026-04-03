@@ -43,6 +43,7 @@ app.use('/api/upload/image', uploadRoutes);
 
 const PORT = process.env.PORT || 5000;
 
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+// The "0.0.0.0" is the critical part for Render!
+app.listen(PORT, "0.0.0.0", () => {
+    console.log(`Server running on port ${PORT}`);
 });

@@ -172,3 +172,17 @@ Content-Type: image/jpeg
 
 < D:\Y2S2\WMT\pawcare\pictures\dog-hero.jpg
 --WebAppBoundary--
+
+### Test LIVE Health Route
+GET https://pawcare-api.onrender.com/api/health
+
+### Register a Regular User on LIVE Server
+POST https://pawcare-api.onrender.com/api/auth/register
+Content-Type: application/json
+
+{
+  "name": "cindy",
+  "email": "cindy@pawcare.com",
+  "password": "password123",
+  "role": "User"
+}
