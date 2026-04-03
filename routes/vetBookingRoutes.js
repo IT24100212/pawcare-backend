@@ -6,7 +6,7 @@ const router = express.Router();
 
 router.use(protect);
 
-router.get('/', authMiddleware, authorizeRoles('Vet', 'Admin'), getAllVetBookings);
+router.get('/', authorizeRoles('Vet', 'Admin'), getAllVetBookings);
 router.put('/:id/status', authorizeRoles('Vet', 'Admin'), updateBookingStatus);
 router.get('/available', getAvailableSlots);
 router.post('/lock', lockSlot);
