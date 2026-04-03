@@ -229,3 +229,15 @@ Content-Type: application/json
   "password": "password123",
   "role": "ShopOwner"
 }
+
+
+### Register the Admin
+POST https://pawcare-api.onrender.com/api/auth/register
+Content-Type: application/json
+
+{
+  "name": "Super Admin",
+  "email": "admin@pawcare.com",
+  "password": "password123",
+  "role": "Admin"
+}
