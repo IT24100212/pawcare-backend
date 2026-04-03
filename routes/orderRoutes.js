@@ -1,5 +1,5 @@
 const express = require('express');
-const { placeOrder, getMyOrders, updateOrderStatus, cancelOrder } = require('../controllers/orderController');
+const { placeOrder, getMyOrders, updateOrderStatus, cancelOrder, getAllOrders } = require('../controllers/orderController');
 const { protect, authorizeRoles } = require('../middleware/authMiddleware');
 
 const router = express.Router();
@@ -9,6 +9,9 @@ router.use(protect);
 router.route('/')
   .post(placeOrder)
   .get(getMyOrders);
+
+router.route('/all')
+  .get(authorizeRoles('ShopOwner', 'Admin'), getAllOrders);
 
 router.route('/:id')
   .delete(cancelOrder);

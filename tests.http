@@ -190,3 +190,42 @@ Content-Type: application/json
 ### Test LIVE Vet Dashboard Bookings
 GET https://pawcare-api.onrender.com/api/bookings/vet
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5Y2U0ZmI3MjAyNzBkYmNmZGEyOTcwZCIsInJvbGUiOiJWZXQiLCJpYXQiOjE3NzUyMTYyMjcsImV4cCI6MTc3NTgyMTAyN30.LO22Jke0QpLNXmWtGwcL9OBLEBn7nqzdHkHvz0mr9aA
+
+
+
+### Register a Groomer
+POST https://pawcare-api.onrender.com/api/auth/register
+Content-Type: application/json
+
+{
+  "name": "Gary the Groomer",
+  "email": "groomer@pawcare.com",
+  "password": "password123",
+  "role": "Groomer"
+}
+
+###
+
+### Register a Pet Sitter
+POST https://pawcare-api.onrender.com/api/auth/register
+Content-Type: application/json
+
+{
+  "name": "Sally the Sitter",
+  "email": "sitter@pawcare.com",
+  "password": "password123",
+  "role": "BoardingManager"
+}
+
+###
+
+### Register a Shop Owner
+POST https://pawcare-api.onrender.com/api/auth/register
+Content-Type: application/json
+
+{
+  "name": "Oliver the Owner",
+  "email": "shop@pawcare.com",
+  "password": "password123",
+  "role": "ShopOwner"
+}
