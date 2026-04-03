@@ -13,6 +13,7 @@ const groomingRoutes = require('./routes/groomingRoutes');
 const boardingRoutes = require('./routes/boardingRoutes');
 const userBookingRoutes = require('./routes/userBookingRoutes');
 const adminRoutes = require('./routes/adminRoutes');
+const userRoutes = require('./routes/userRoutes');
 const uploadRoutes = require('./routes/uploadRoutes');
 
 // Load environment variables
@@ -43,6 +44,7 @@ app.use('/api/bookings/grooming', groomingRoutes);
 app.use('/api/bookings/boarding', boardingRoutes);
 app.use('/api/bookings', userBookingRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/users', userRoutes);
 app.use('/api/upload/image', uploadRoutes);
 
 const PORT = process.env.PORT || 5000;

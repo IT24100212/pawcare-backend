@@ -112,6 +112,7 @@ const cancelBooking = async (req, res) => {
 
     booking.status = 'Cancelled';
     booking.lockedUntil = undefined;
+    booking.isInstantSlot = true;
     await booking.save();
     res.status(200).json({ message: 'Booking cancelled successfully' });
   } catch (error) {
