@@ -186,3 +186,7 @@ Content-Type: application/json
   "password": "password123",
   "role": "User"
 }
+
+### Test LIVE Vet Dashboard Bookings
+GET https://pawcare-api.onrender.com/api/bookings/vet
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5Y2U0ZmI3MjAyNzBkYmNmZGEyOTcwZCIsInJvbGUiOiJWZXQiLCJpYXQiOjE3NzUyMTYyMjcsImV4cCI6MTc3NTgyMTAyN30.LO22Jke0QpLNXmWtGwcL9OBLEBn7nqzdHkHvz0mr9aA
