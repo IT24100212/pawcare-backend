@@ -22,6 +22,10 @@ dotenv.config();
 // Connect to database
 connectDB();
 
+// Initialize Cron Jobs
+const { initCronJobs } = require('./utils/cronJobs');
+initCronJobs();
+
 const app = express();
 
 // Middleware

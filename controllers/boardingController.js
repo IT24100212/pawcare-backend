@@ -15,15 +15,26 @@ const getAvailableSlots = async (req, res) => {
 
     const existingBookings = await Booking.find({
       serviceType: 'Boarding',
-      appointmentDate: { $gte: startOfDay, $lte: endOfDay },
-      $or: [
-        { status: { $ne: 'Cancelled' } },
-        { lockedUntil: { $gt: Date.now() } }
-      ]
+      appointmentDate: { $gte: startOfDay, $lte: endOfDay }
     });
 
-    const bookedOrLockedSlots = existingBookings.map(b => b.timeSlot);
-    const availableSlots = standardSlots.filter(slot => !bookedOrLockedSlots.includes(slot));
+    const activeBookings = existingBookings.filter(b => 
+      b.status !== 'Cancelled' && 
+      (b.status !== 'Pending' || (b.lockedUntil && b.lockedUntil > Date.now()))
+    );
+
+    const bookedOrLockedSlots = activeBookings.map(b => b.timeSlot);
+    
+    const cancelledBookings = existingBookings.filter(b => b.status === 'Cancelled');
+    const cancelledSlots = cancelledBookings.map(b => b.timeSlot);
+
+    const availableSlots = standardSlots
+      .filter(slot => !bookedOrLockedSlots.includes(slot))
+      .map(slot => ({
+        time: slot,
+        isInstant: cancelledSlots.includes(slot)
+      }));
+
     res.status(200).json(availableSlots);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -53,6 +64,13 @@ const lockSlot = async (req, res) => {
 
     if (existingBooking) return res.status(400).json({ message: 'Slot is already booked or locked' });
 
+    const isInstant = await Booking.findOne({
+      serviceType: 'Boarding',
+      appointmentDate: { $gte: startOfDay, $lte: endOfDay },
+      timeSlot,
+      status: 'Cancelled'
+    });
+
     const lockedUntil = new Date(Date.now() + 5 * 60 * 1000);
     const newBooking = await Booking.create({
       userId: req.user._id,
@@ -60,7 +78,8 @@ const lockSlot = async (req, res) => {
       appointmentDate,
       timeSlot,
       lockedUntil,
-      status: 'Pending'
+      status: 'Pending',
+      isInstantSlot: !!isInstant
     });
 
     res.status(201).json({ bookingId: newBooking._id });
@@ -85,8 +104,16 @@ const confirmBooking = async (req, res) => {
     booking.petId = petId;
     booking.lockedUntil = undefined;
     booking.status = 'Pending';
-    booking.isInstantSlot = false;
+    // Removed isInstantSlot assignment to preserve its state
     await booking.save();
+
+    const { sendNotification } = require('../utils/notificationService');
+    sendNotification(
+      booking.userId,
+      'Booking Confirmed',
+      `Your Boarding appointment on ${new Date(booking.appointmentDate).toLocaleDateString()} at ${booking.timeSlot} is confirmed and pending approval.`
+    );
+
     res.status(200).json({ message: 'Booking confirmed', booking });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -114,6 +141,14 @@ const cancelBooking = async (req, res) => {
     booking.lockedUntil = undefined;
     booking.isInstantSlot = true;
     await booking.save();
+
+    const { sendNotification } = require('../utils/notificationService');
+    sendNotification(
+      booking.userId,
+      'Booking Cancelled',
+      `Your Boarding appointment on ${new Date(booking.appointmentDate).toLocaleDateString()} at ${booking.timeSlot} has been cancelled.`
+    );
+
     res.status(200).json({ message: 'Booking cancelled successfully' });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -139,6 +174,14 @@ const updateBookingStatus = async (req, res) => {
     if (!booking) return res.status(404).json({ message: 'Booking not found' });
     booking.status = status;
     await booking.save();
+
+    const { sendNotification } = require('../utils/notificationService');
+    sendNotification(
+      booking.userId,
+      `Booking ${status}`,
+      `Your Boarding appointment on ${new Date(booking.appointmentDate).toLocaleDateString()} at ${booking.timeSlot} has been ${status.toLowerCase()}.`
+    );
+
     res.status(200).json(booking);
   } catch (error) {
     res.status(500).json({ message: error.message });
