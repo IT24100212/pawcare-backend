@@ -18,10 +18,16 @@ const getAvailableSlots = async (req, res) => {
       appointmentDate: { $gte: startOfDay, $lte: endOfDay }
     });
 
-    const activeBookings = existingBookings.filter(b => 
-      b.status !== 'Cancelled' && 
-      (b.status !== 'Pending' || (b.lockedUntil && b.lockedUntil > Date.now()))
-    );
+    // A slot is occupied when:
+    //  - status is Approved or Rejected (final states), OR
+    //  - status is Pending AND petId is set (booking confirmed, awaiting boarding approval), OR
+    //  - status is Pending AND lockedUntil is still in the future (active TTL lock)
+    const activeBookings = existingBookings.filter(b => {
+      if (b.status === 'Cancelled') return false;        // cancelled → free
+      if (b.status !== 'Pending')   return true;         // Approved/Rejected → occupied
+      if (b.petId)                  return true;         // confirmed booking → occupied
+      return b.lockedUntil && b.lockedUntil > Date.now(); // live TTL lock → occupied
+    });
 
     const bookedOrLockedSlots = activeBookings.map(b => b.timeSlot);
     
