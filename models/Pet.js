@@ -22,6 +22,9 @@ const petSchema = new mongoose.Schema({
     min: [0, 'Age cannot be negative'],
     max: [50, 'Age looks unrealistic'],
   },
+  birthDate: {
+    type: Date,
+  },
   image: {
     type: String,
   },
