@@ -35,6 +35,11 @@ const bookingSchema = new mongoose.Schema({
   lockedUntil: {
     type: Date,
   },
+  updates: [{
+    date: { type: Date, default: Date.now },
+    photoUrl: { type: String },
+    message: { type: String, required: true }
+  }]
 }, {
   timestamps: true
 });

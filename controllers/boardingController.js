@@ -194,4 +194,32 @@ const updateBookingStatus = async (req, res) => {
   }
 };
 
-module.exports = { getAvailableSlots, lockSlot, confirmBooking, cancelBooking, getAllBoardingBookings, updateBookingStatus };
+const addBoardingUpdate = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { message, photoUrl } = req.body;
+
+    if (!message) {
+      return res.status(400).json({ message: 'Message is required for an update' });
+    }
+
+    const booking = await Booking.findById(id);
+    if (!booking) return res.status(404).json({ message: 'Booking not found' });
+
+    booking.updates.push({ message, photoUrl });
+    await booking.save();
+
+    const { sendNotification } = require('../utils/notificationService');
+    sendNotification(
+      booking.userId,
+      'New Pet Update',
+      `Your Sitter has posted a new update for your boarding booking on ${new Date(booking.appointmentDate).toLocaleDateString()}.`
+    );
+
+    res.status(200).json(booking);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+module.exports = { getAvailableSlots, lockSlot, confirmBooking, cancelBooking, getAllBoardingBookings, updateBookingStatus, addBoardingUpdate };
