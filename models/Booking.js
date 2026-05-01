@@ -25,7 +25,7 @@ const bookingSchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    enum: ['Pending', 'Approved', 'Rejected', 'Cancelled'],
+    enum: ['Pending', 'Approved', 'Checked-In', 'Completed', 'Rejected', 'Cancelled'],
     default: 'Pending',
   },
   isInstantSlot: {
