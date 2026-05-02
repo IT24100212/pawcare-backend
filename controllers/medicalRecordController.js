@@ -23,10 +23,7 @@ const calculateNextDueDate = (vaccineName, dateGiven) => {
     return nextDate;
 };
 
-/**
- * Add medical record (supports vaccination auto-calculation)
- * Student 4: Added auto nextDueDate calculation for vaccines
- */
+
 const addRecord = async (req, res) => {
     try {
         const { vaccineName, dateGiven, nextDueDate } = req.body;
