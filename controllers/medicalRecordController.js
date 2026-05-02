@@ -1,6 +1,13 @@
 const MedicalRecord = require('../models/MedicalRecord');
 
-// Helper function to calculate next due date (Student 4)
+
+/**
+ * Helper function to calculate next due date based on vaccine type
+ * @param {string} vaccineName - Name of the vaccine
+ * @param {Date} dateGiven - Date when vaccine was given
+ * @returns {Date} Calculated next due date
+ * Student 4 - Vaccination Module
+ */
 const calculateNextDueDate = (vaccineName, dateGiven) => {
     const vaccineDurations = {
         'Rabies': 365,
@@ -10,17 +17,21 @@ const calculateNextDueDate = (vaccineName, dateGiven) => {
         'Lyme': 365,
         'Canine Influenza': 365
     };
-    const days = vaccineDurations[vaccineName] || 365;
+    const days = vaccineDurations[vaccineName] || 365; // Default 1 year
     const nextDate = new Date(dateGiven);
     nextDate.setDate(nextDate.getDate() + days);
     return nextDate;
 };
 
+/**
+ * Add medical record (supports vaccination auto-calculation)
+ * Student 4: Added auto nextDueDate calculation for vaccines
+ */
 const addRecord = async (req, res) => {
     try {
         const { vaccineName, dateGiven, nextDueDate } = req.body;
 
-        // Auto-calculate nextDueDate for vaccinations (Student 4)
+        // STUDENT 4: Auto-calculate nextDueDate for vaccinations
         let finalNextDueDate = nextDueDate;
         if (vaccineName && dateGiven && !nextDueDate) {
             finalNextDueDate = calculateNextDueDate(vaccineName, dateGiven);
@@ -37,12 +48,19 @@ const addRecord = async (req, res) => {
     }
 };
 
+/**
+ * Get medical records by pet ID
+ * Student 4: Added type filter to get only vaccination records
+ * Usage: GET /api/medicalrecords/pet/:petId?type=vaccination
+ */
 const getRecordsByPet = async (req, res) => {
     try {
         const { petId } = req.params;
-        const { type } = req.query; // Add filter for vaccination type (Student 4)
+        const { type } = req.query; // STUDENT 4: Filter for vaccination type
 
         let query = { petId, isDeleted: false };
+
+        // STUDENT 4: Filter only vaccination records
         if (type === 'vaccination') {
             query.vaccineName = { $exists: true, $ne: null };
         }
@@ -54,12 +72,16 @@ const getRecordsByPet = async (req, res) => {
     }
 };
 
+/**
+ * Update medical record
+ * Student 4: Recalculate nextDueDate if vaccine info changes
+ */
 const updateRecord = async (req, res) => {
     try {
         const { id } = req.params;
         const { vaccineName, dateGiven, nextDueDate } = req.body;
 
-        // Recalculate if vaccine info changed (Student 4)
+        // STUDENT 4: Recalculate if vaccine info changed
         let updateData = { ...req.body };
         if (vaccineName && dateGiven && !nextDueDate) {
             updateData.nextDueDate = calculateNextDueDate(vaccineName, dateGiven);
@@ -77,6 +99,9 @@ const updateRecord = async (req, res) => {
     }
 };
 
+/**
+ * Soft delete medical record
+ */
 const deleteRecord = async (req, res) => {
     try {
         const { id } = req.params;
