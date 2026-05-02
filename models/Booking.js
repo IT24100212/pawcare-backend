@@ -17,20 +17,20 @@ const bookingSchema = new mongoose.Schema({
   },
   appointmentDate: {
     type: Date,
-    required: true,
+    // Optional for Boarding
   },
   timeSlot: {
     type: String,
-    required: true,
+    // Optional for Boarding
+  },
+  boardingDates: {
+    type: [Date],
+    default: undefined,
   },
   status: {
     type: String,
     enum: ['Pending', 'Approved', 'Rejected', 'Cancelled'],
     default: 'Pending',
-  },
-  isInstantSlot: {
-    type: Boolean,
-    default: false,
   },
   lockedUntil: {
     type: Date,
