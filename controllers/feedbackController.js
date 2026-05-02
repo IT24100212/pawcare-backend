@@ -114,15 +114,17 @@ const getStaffFeedback = async (req, res) => {
     const userRole = req.user.role;
     // Map existing system roles to feedback categories if assignedRole isn't strictly set
     let allowedCategories = [];
-    if (userRole === 'Vet') allowedCategories = ['vet'];
-    if (userRole === 'Groomer') allowedCategories = ['grooming'];
-    if (userRole === 'ShopOwner') allowedCategories = ['shop'];
-    if (userRole === 'BoardingManager') allowedCategories = ['boarding'];
+    let legacyTypes = [];
+    if (userRole === 'Vet') { allowedCategories = ['vet']; legacyTypes = ['Vet']; }
+    if (userRole === 'Groomer') { allowedCategories = ['grooming']; legacyTypes = ['Grooming']; }
+    if (userRole === 'ShopOwner') { allowedCategories = ['shop']; legacyTypes = ['PetShop']; }
+    if (userRole === 'BoardingManager') { allowedCategories = ['boarding']; legacyTypes = ['Boarding']; }
     
     const feedbacks = await Feedback.find({
       $or: [
         { assignedRole: userRole },
-        { category: { $in: allowedCategories } }
+        { category: { $in: allowedCategories } },
+        { serviceType: { $in: legacyTypes } }
       ]
     }).populate('userId', 'name').sort({ createdAt: -1 });
     
