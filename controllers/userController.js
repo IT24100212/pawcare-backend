@@ -1,4 +1,6 @@
 const User = require('../models/User');
+const Order = require('../models/Order');
+const Booking = require('../models/Booking');
 const bcrypt = require('bcrypt');
 
 const getProfile = async (req, res) => {
@@ -52,4 +54,31 @@ const changePassword = async (req, res) => {
   }
 };
 
-module.exports = { getProfile, updateProfile, changePassword };
+const deleteMyAccount = async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id);
+    if (!user) return res.status(404).json({ message: 'User not found' });
+
+    user.isDeleted = true;
+    user.name = 'Deleted User';
+    user.email = `deleted_${Date.now()}_${user._id}@pawcare.com`;
+    user.phone = '';
+    user.password = await bcrypt.hash(Date.now().toString(), 10);
+    await user.save();
+
+    await Order.updateMany(
+      { userId: user._id, status: { $in: ['Pending', 'Ready'] } },
+      { $set: { status: 'Cancelled' } }
+    );
+    await Booking.updateMany(
+      { userId: user._id, status: { $in: ['Pending', 'Approved'] } },
+      { $set: { status: 'Cancelled' } }
+    );
+
+    res.status(200).json({ message: 'Account securely deleted and pending items cancelled.' });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+module.exports = { getProfile, updateProfile, changePassword, deleteMyAccount };

@@ -60,6 +60,10 @@ const loginUser = async (req, res) => {
       return res.status(403).json({ message: 'Your account has been blocked. Contact admin.' });
     }
 
+    if (user.isDeleted) {
+      return res.status(401).json({ message: 'Invalid email or password' });
+    }
+
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
       return res.status(401).json({ message: 'Invalid email or password' });
