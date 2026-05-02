@@ -2,7 +2,7 @@ const Pet = require('../models/Pet');
 
 const addPet = async (req, res) => {
   try {
-    const { name, species, breed, age, image, medicalNotes } = req.body;
+    const { name, species, breed, age, birthDate, image, medicalNotes, feedingScheduleAndAllergies, behavioralQuirks, emergencyVet } = req.body;
     
     const newPet = await Pet.create({
       ownerId: req.user._id,
@@ -10,8 +10,12 @@ const addPet = async (req, res) => {
       species,
       breed,
       age,
+      birthDate,
       image,
-      medicalNotes
+      medicalNotes,
+      feedingScheduleAndAllergies,
+      behavioralQuirks,
+      emergencyVet
     });
     
     res.status(201).json(newPet);

@@ -31,6 +31,16 @@ const petSchema = new mongoose.Schema({
   medicalNotes: {
     type: String,
   },
+  feedingScheduleAndAllergies: {
+    type: String,
+  },
+  behavioralQuirks: {
+    type: String,
+  },
+  emergencyVet: {
+    name: { type: String },
+    phone: { type: String },
+  },
 }, {
   timestamps: true
 });
